@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Get raw videos and GT masks from public dataset</title>
+        <style>
+</style>
+        
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/markdown.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Microsoft/vscode/extensions/markdown-language-features/media/highlight.css">
+<style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe WPC', 'Segoe UI', system-ui, 'Ubuntu', 'Droid Sans', sans-serif;
+                font-size: 14px;
+                line-height: 1.6;
+            }
+        </style>
+        <style>
+.task-list-item { list-style-type: none; } .task-list-item-checkbox { margin-left: -20px; vertical-align: middle; }
+</style>
+        
+        
+        
+    </head>
+    <body class="vscode-light">
+        <ul>
+<li><a href="#get-raw-videos-and-gt-masks-from-public-dataset">Get raw videos and GT masks from public dataset</a>
+<ul>
+<li><a href="#allen-brain-observatory-abo-dataset">Allen Brain Observatory (ABO) dataset</a></li>
+<li><a href="#neurofinder-challenge-dataset">Neurofinder Challenge dataset</a></li>
+<li><a href="#caiman-dataset">CaImAn dataset</a></li>
+</ul>
+</li>
+<li><a href="#convert-manual-labels-into-sparse-matrices">Convert manual labels into sparse matrices</a></li>
+<li><a href="#generate-convolution-kernel-for-temporal-filtering">Generate convolution kernel for temporal filtering</a></li>
+<li><a href="#reproduce-the-results-in-our-paper">Reproduce the results in our paper</a></li>
+</ul>
+<h1 id="get-raw-videos-and-gt-masks-from-public-dataset">Get raw videos and GT masks from public dataset</h1>
+<p>In our paper, we used two-photon imaging videos from Allen Brain Observatory dataset, Neurofinder Challenge website, and CaImAn dataset. We used the manual markings of Allen Brain Observatory and Neurofinder from the STNeuroNet repository, and used the manual markings of CaImAn dataset from CaImAn dataset. A more detailed instruction is given below.</p>
+<h2 id="allen-brain-observatory-abo-dataset">Allen Brain Observatory (ABO) dataset</h2>
+<p>The ABO dataset is available in <a href="https://github.com/AllenInstitute/AllenSDK/wiki/Use-the-Allen-Brain-Observatory-%E2%80%93-Visual-Coding-on-AWS">Allen Institute</a>. You may need a Amazon AWS account to download them. We used ten videos from 275 um layer, {'524691284', '531006860', '502608215', '503109347', '501484643', '501574836', '501729039', '539670003', '510214538', '527048992'}, and 10 videos from 175 um layer, {'501271265', '501704220', '501836392', '502115959', '502205092', '504637623', '510514474', '510517131', '540684467', '545446482'}. We used the manual labels of <a href="https://github.com/soltanianzadeh/STNeuroNet/tree/master/Markings/ABO/Layer275/FinalGT">275 um layer</a> and <a href="https://github.com/soltanianzadeh/STNeuroNet/tree/master/Markings/ABO/Layer175/FinalGT">175 um layer</a> created by Soltanian-Zadeh et al. We also used the code <a href="utils/create_h5_video_ABO.m">create_h5_video_ABO.m</a> modified from the same STNeuroNet repository to crop each video to the first 20% durations and the center parts, so that the video sizes are changed from 512 x 512 x ~115,000 to 487 x 487 x ~23,000. Set the folders correctly, and run the code twice by setting <code>layer = 275</code> and <code>layer = 175</code>.</p>
+<h2 id="neurofinder-challenge-dataset">Neurofinder Challenge dataset</h2>
+<p>The Neurofinder dataset is available in <a href="https://github.com/codeneuro/neurofinder">Neurofinder</a>. We used 6 training videos, {01.00, 01.01, 02.00, 02.01, 04.00, 04.01}, and 6 testing videos, {01.00.test, 01.01.test, 02.00.test, 02.01.test, 04.00.test, 04.01.test}. We used the manual labels of <a href="https://github.com/soltanianzadeh/STNeuroNet/tree/master/Markings/Neurofinder/train/Grader1">training video</a> and <a href="https://github.com/soltanianzadeh/STNeuroNet/tree/master/Markings/Neurofinder/test/Grader1">testing video</a> created by Soltanian-Zadeh et al. We also used the code <a href="utils/create_h5_video_NF.m">create_h5_video_NF.m</a> modified from the same STNeuroNet repository to crop the center parts. Set the folders correctly, and run the code twice by setting <code>opt.type = 'train'</code> and <code>opt.type = 'test'</code>. Rename the GT mask files by replacing the short video number with complete video number (e.g. replacing &quot;100&quot; with &quot;01.00&quot; or &quot;01.00.test&quot;).</p>
+<h2 id="caiman-dataset">CaImAn dataset</h2>
+<p>In the following procedures, we use MATLAB to convert the raw video from series of &quot;.tif&quot; or &quot;.tiff&quot; images to &quot;.h5&quot; files and convert the ground truth labels (GT masks) from &quot;.json&quot; files to &quot;.mat&quot; files. The code requires a MATLAB package <a href="https://www.mathworks.com/matlabcentral/fileexchange/33381-jsonlab-a-toolbox-to-encode-decode-json-files">JSONLab</a>, so download it first and put it in a path that MATLAB can access.</p>
+<p>The video and manual labels of the CaImAn dataset is available <a href="https://zenodo.org/record/1659149">here</a>. The video can also be downloaded <a href="https://users.flatironinstitute.org/~neuro/caiman_paper">here</a>. We used the videos J115, J123, K53, and YST. The GT labels are provided in <code>WEBSITE_basic</code>. Download the five &quot;.zip&quot; files and put them in the same folder, then unzip them. Run <a href="utils/video_masks_CaImAn.m">utils/video_masks_CaImAn.m</a> to generate the &quot;.h5&quot; files for raw videos and the &quot;.mat&quot; files for GT masks. Each video is divided into a set of 4 quarter-sized sub-videos with equal size and similar numbers of neurons.</p>
+<h1 id="convert-manual-labels-into-sparse-matrices">Convert manual labels into sparse matrices</h1>
+<p>All the manual labels are now stored in the form of a 3D array. For convenience of use, we convert them to 2D sparse matrices by running <a href="utils/generate_sparse_GT.m">utils/generate_sparse_GT.m</a></p>
+<h1 id="generate-convolution-kernel-for-temporal-filtering">Generate convolution kernel for temporal filtering</h1>
+<p>We generated the temporal filter kernel by averaging fluorescence responses of the GT neurons to calcium transients with moderate peak SNR between 5 and 8 aligned to their peaks. The generated filter kernels are provided in <code>paper reproduction/Generalization_test</code> as &quot;.h5&quot; files. Alternatively, you can also use the code under <code>utils/temporal filter</code> to regenerate them. After setting the folders, run <code>calculate_traces_bgtraces_ABO.m</code> and <code>temporal_filter_ABO.m</code> to obtain the filter kernel for the ABO dataset. Run other similar functions to obtain the filter kernels for Neurofinder (NF) and CaImAn (CM) datasets.</p>
+<h1 id="reproduce-the-results-in-our-paper">Reproduce the results in our paper</h1>
+<p>We used the conda environment exported as <code>installation\environment_suns_test.yml</code> to run all of our tests. The major results in our paper can be reproduced by running the <code>.bat</code> files under the sub folders <code>ABO</code>, <code>Neurofinder</code>, and <code>CaImAn dataset</code>. Some module versions are older than the latest versions installed from <code>installation\environment_suns.yml</code>. We showed all of our trained CNNs and optimized postprocessing hyperparameters in <code>training results</code>. We showed all of our output masks, together with the output masks of the peer algorithms, in <code>output masks all methods</code>. The results of SUNS were saved in Python using C order, while the results of the other methods were saved in MATLAB using F order, so a permutation/transpose is required to align their dimensions (i.e., <code>permute(Masks,[3,2,1])</code> in MATLAB, or <code>np.transpose(Masks,[2,1,0])</code> in Python).</p>
+
+    </body>
+    </html>
