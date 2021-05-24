@@ -178,7 +178,10 @@ In our paper, we used two-photon imaging videos from [Allen Brain Observatory da
 
 
 # Citing 
-If you use any part of this software in your work, please cite Bao et al. 2020:
+If you use any part of this software in your work, please cite Bao et al. 2021:
+* Bao, Y., S. Soltanian-Zadeh, S. Farsiu, and Y. Gong, Segmentation of neurons from fluorescence calcium recordings beyond real time. *Nature Machine Intelligence* (2021). DOI: [10.1038/s42256-021-00342-x](https://doi.org/10.1038/s42256-021-00342-x)
+
+There is a [view-only version](https://rdcu.be/ckZH4) of the paper.
 
 
 # Licensing and Copyright
